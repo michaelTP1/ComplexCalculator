@@ -1,3 +1,3 @@
 # Calculadora
 
-Calculadora simplona con JavaFX.
+Calculadora compleja con JavaFX.
