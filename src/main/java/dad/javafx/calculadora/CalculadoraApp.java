@@ -2,8 +2,7 @@ package dad.javafx.calculadora;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
@@ -19,39 +18,38 @@ import javafx.util.converter.NumberStringConverter;
 
 public class CalculadoraApp extends Application {
 
-	// modelo
-
-	private DoubleProperty operando1Real = new SimpleDoubleProperty();
-	private DoubleProperty operando1Imaginario = new SimpleDoubleProperty();
-	private DoubleProperty operando2Real = new SimpleDoubleProperty();
-	private DoubleProperty operando2Imaginario = new SimpleDoubleProperty();
-	private DoubleProperty resultadoReal = new SimpleDoubleProperty();
-	private DoubleProperty resultadoImaginario = new SimpleDoubleProperty();
+	Complex complex1, complex2, complexAns;
 	
 	private StringProperty operador = new SimpleStringProperty();
 
 	// vista
 
-	private TextField operando1RealText,operando1ImaginarioText;
-	private TextField operando2RealText,operando2ImaginarioText;
+	private TextField real1Text,imaginary1Text;
+	private TextField real2Text,imaginary2Text;
 	private TextField resultadoRealText,resultadoImaginarioText;
 
 	private ComboBox<String> operadorCombo;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		operando1RealText = new TextField();
-		operando1RealText.setPrefColumnCount(4);
 		
-		operando1ImaginarioText = new TextField();
-		operando1ImaginarioText.setPrefColumnCount(4);
 		
-		operando2RealText = new TextField();
-		operando2RealText.setPrefColumnCount(4);
+		complex1=new Complex();
+		complex2=new Complex();
+		complexAns=new Complex();
+		
+		
+		real1Text = new TextField();
+		real1Text.setPrefColumnCount(4);
+		
+		imaginary1Text = new TextField();
+		imaginary1Text.setPrefColumnCount(4);
+		
+		real2Text = new TextField();
+		real2Text.setPrefColumnCount(4);
 
-		operando2ImaginarioText = new TextField();
-		operando2ImaginarioText.setPrefColumnCount(4);
+		imaginary2Text = new TextField();
+		imaginary2Text.setPrefColumnCount(4);
 
 		resultadoRealText = new TextField();
 		resultadoRealText.setPrefColumnCount(4);
@@ -65,8 +63,8 @@ public class CalculadoraApp extends Application {
 		operadorCombo.getItems().addAll("+", "-", "*", "/");
 
 		
-		HBox operando1Box=new HBox(5, operando1RealText,new Label("+"), operando1ImaginarioText, new Label("i"));
-		HBox operando2Box=new HBox(5, operando2RealText,new Label("+"), operando2ImaginarioText,new Label("i"));
+		HBox operando1Box=new HBox(5, real1Text,new Label("+"), imaginary1Text, new Label("i"));
+		HBox operando2Box=new HBox(5, real2Text,new Label("+"), imaginary2Text,new Label("i"));
 		HBox answerBox=new HBox(5, resultadoRealText,new Label("+"), resultadoImaginarioText,new Label("i") );
 		
 		VBox operadorBox=new VBox(5, operadorCombo);
@@ -77,8 +75,7 @@ public class CalculadoraApp extends Application {
 		
 		HBox root=new HBox(5, operadorBox, operandosBox);
 		root.setAlignment(Pos.CENTER);
-		
-		
+				
 
 		Scene scene = new Scene(root, 320, 200);
 
@@ -88,12 +85,15 @@ public class CalculadoraApp extends Application {
 
 		// bindeos
 
-		Bindings.bindBidirectional(operando1RealText.textProperty(), operando1Real, new NumberStringConverter());
-		Bindings.bindBidirectional(operando1ImaginarioText.textProperty(), operando1Imaginario, new NumberStringConverter());
-		Bindings.bindBidirectional(operando2RealText.textProperty(), operando2Real, new NumberStringConverter());
-		Bindings.bindBidirectional(operando2ImaginarioText.textProperty(), operando2Imaginario, new NumberStringConverter());
-		Bindings.bindBidirectional(resultadoRealText.textProperty(), resultadoReal, new NumberStringConverter());
-		Bindings.bindBidirectional(resultadoImaginarioText.textProperty(), resultadoImaginario, new NumberStringConverter());
+		
+		
+		Bindings.bindBidirectional(real1Text.textProperty(), complex1.realProperty(), new NumberStringConverter());
+		Bindings.bindBidirectional(imaginary1Text.textProperty(), complex1.imaginarioProperty(), new NumberStringConverter());
+		Bindings.bindBidirectional(real2Text.textProperty(), complex2.realProperty(), new NumberStringConverter());
+		Bindings.bindBidirectional(imaginary2Text.textProperty(), complex2.imaginarioProperty(), new NumberStringConverter());
+		Bindings.bindBidirectional(resultadoRealText.textProperty(), complexAns.realProperty(), new NumberStringConverter());
+		Bindings.bindBidirectional(resultadoImaginarioText.textProperty(), complexAns.imaginarioProperty(), new NumberStringConverter());
+		
 
 		operador.bind(operadorCombo.getSelectionModel().selectedItemProperty());
 
@@ -109,23 +109,17 @@ public class CalculadoraApp extends Application {
 
 		switch (nv) {
 		case "+":
-			resultadoReal.bind(operando1Real.add(operando2Real));
-			resultadoImaginario.bind(operando1Imaginario.add(operando2Imaginario));
+			 complexAns.setComplex(complex1.add(complex2));
 			break;
 		case "-":
-			resultadoReal.bind(operando1Real.subtract(operando2Real));
-			resultadoImaginario.bind(operando1Imaginario.subtract(operando2Imaginario));
+			complexAns.setComplex(complex1.subtract(complex2));
 			break;
 		case "*":
-			resultadoReal.bind(operando1Real.multiply(operando2Real).subtract(operando1Imaginario.multiply(operando2Imaginario)));
-			resultadoImaginario.bind(operando1Real.multiply(operando2Imaginario).add(operando1Imaginario.multiply(operando2Real)));
+			complexAns.setComplex(complex1.multiply(complex2));
 			
 			break;
 		case "/":
-			resultadoReal.bind((operando1Real.multiply(operando2Real).add(operando1Imaginario.multiply(operando2Imaginario))
-					.divide(operando2Real.multiply(operando2Real).add(operando2Imaginario.multiply(operando2Imaginario)))));
-			resultadoImaginario.bind((operando1Imaginario.multiply(operando2Real).subtract(operando1Real.multiply(operando2Imaginario))
-					.divide(operando2Real.multiply(operando2Real).add(operando2Imaginario.multiply(operando2Imaginario)))));
+			complexAns.setComplex(complex1.divide(complex2));
 			
 			break;
 		}
