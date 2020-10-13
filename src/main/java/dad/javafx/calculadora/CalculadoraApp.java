@@ -53,11 +53,11 @@ public class CalculadoraApp extends Application {
 
 		resultadoRealText = new TextField();
 		resultadoRealText.setPrefColumnCount(4);
-		resultadoRealText.setDisable(true);
+		resultadoRealText.setEditable(false);
 		
 		resultadoImaginarioText = new TextField();
 		resultadoImaginarioText.setPrefColumnCount(4);
-		resultadoImaginarioText.setDisable(true);
+		resultadoImaginarioText.setEditable(false);
 
 		operadorCombo = new ComboBox<String>();
 		operadorCombo.getItems().addAll("+", "-", "*", "/");
